@@ -4,6 +4,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerOptions = require('./docs/swagger');
 
+
 const app = express();
 
 // Middleware
@@ -16,9 +17,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // Routes
 const userRoutes = require('./routes/user');
 const droneRoutes = require('./routes/drones');
+const PeçasRoutes = require('./models/Peças');
+const assemblysRoutes = require('./routes/assemblys');
+
 
 app.use('/api/users', userRoutes);
 app.use('/api/drones', droneRoutes);
+app.use('/api/Peças', PeçasRoutes);
+app.use('/api/assemblys', assemblysRoutes);
 
 const PORT = process.env.PORT || 5000;
 
