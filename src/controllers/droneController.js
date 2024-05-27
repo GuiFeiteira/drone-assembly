@@ -2,7 +2,7 @@ const Drone = require('../models/Drone');
 
 exports.createDrone = async (req, res) => {
   const { name, type } = req.body;
-  const userId = req.user.id; // Assume that req.user is set by a middleware after token verification
+  const userId = req.user.id; 
   try {
     const drone = await Drone.create({ name, type, user: userId });
     res.status(201).json(drone);
