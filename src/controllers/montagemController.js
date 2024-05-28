@@ -1,30 +1,43 @@
-const Assembly = require('../models/montagem');
-const Drone = require('../models/Drone');
-const Piece = require('../models/peca');
+const Montagem = require('../models/montagem')
+const Drone = require('../models/Drone')
+const Peca = require('..//models/pecas')
 
 exports.createAssembly = async (req, res) => {
-  try {
-    const { droneId, pieceIds } = req.body;
-    const userId = req.user.id;
-
-    const drone = await Drone.findById(droneId);
-    if (!drone || drone.user.toString() !== userId) {
-      return res.status(404).json({ error: 'Drone não encontrado' });
+    try {
+      const { droneId, pieceId, quantidade } = req.body;
+      const userId = req.user.id;
+  
+      // Verify Drone Existence
+      const drone = await Drone.findById(droneId);
+      if (!drone || drone.user.toString() !== userId) {
+        return res.status(404).json({ error: 'Drone não encontrado' });
+      }
+  
+      // Verify Piece Existence
+      const piece = await Piece.findOne({ _id: pieceId, user: userId });
+      if (!piece) {
+        return res.status(404).json({ error: 'Peça não encontrada' });
+      }
+  
+      // Validate Quantidade
+      if (quantidade <= 0) {
+        return res.status(400).json({ error: 'Quantidade deve ser maior que zero' });
+      }
+  
+      // Create New Assembly
+      const newAssembly = new Assembly({
+        drone: droneId,
+        user: userId,
+        pieces: pieceId,
+        quantidade,
+      });
+      await newAssembly.save();
+  
+      res.status(201).json(newAssembly);
+    } catch (err) {
+      res.status(500).json({ error: 'Erro ao registrar a montagem' });
     }
-
-    const pieces = await Piece.find({ _id: { $in: pieceIds }, user: userId });
-    if (pieces.length !== pieceIds.length) {
-      return res.status(404).json({ error: 'Algumas peças não foram encontradas' });
-    }
-
-    const newAssembly = new Assembly({ drone: droneId, user: userId, pieces: pieceIds });
-    await newAssembly.save();
-
-    res.status(201).json(newAssembly);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao registrar a montagem' });
-  }
-};
+  };
 
 exports.getAssemblies = async (req, res) => {
   try {
@@ -39,17 +52,25 @@ exports.getAssemblies = async (req, res) => {
 exports.updateAssembly = async (req, res) => {
   try {
     const { id } = req.params;
-    const { pieceIds, status } = req.body;
+    const { pieceId, quantidade, status } = req.body;
     const userId = req.user.id;
 
-    const pieces = await Piece.find({ _id: { $in: pieceIds }, user: userId });
-    if (pieces.length !== pieceIds.length) {
-      return res.status(404).json({ error: 'Algumas peças não foram encontradas' });
+    // Optional Piece Verification (if provided)
+    if (pieceId) {
+      const piece = await Piece.findOne({ _id: pieceId, user: userId });
+      if (!piece) {
+        return res.status(404).json({ error: 'Peça não encontrada' });
+      }
+    }
+
+    // Validate Quantidade (if provided)
+    if (quantidade && quantidade <= 0) {
+      return res.status(400).json({ error: 'Quantidade deve ser maior que zero' });
     }
 
     const assembly = await Assembly.findOneAndUpdate(
       { _id: id, user: userId },
-      { pieces: pieceIds, status },
+      { pieces: pieceId, quantidade, status },
       { new: true }
     );
 
@@ -63,19 +84,20 @@ exports.updateAssembly = async (req, res) => {
   }
 };
 
+
 exports.deleteAssembly = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    const assembly = await Assembly.findOneAndDelete({ _id: id, user: userId });
-
-    if (!assembly) {
-      return res.status(404).json({ error: 'Montagem não encontrada' });
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+  
+      const assembly = await Assembly.findOneAndDelete({ _id: id, user: userId });
+  
+      if (!assembly) {
+        return res.status(404).json({ error: 'Montagem não encontrada' });
+      }
+  
+      res.status(200).json({ message: 'Montagem eliminada com sucesso' });
+    } catch (err) {
+      res.status(500).json({ error: 'Erro ao eliminar montagem' });
     }
-
-    res.status(200).json({ message: 'Montagem eliminada com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao eliminar montagem' });
-  }
-};
+  };

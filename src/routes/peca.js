@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPiece, getPieces, updatePiece, deletePiece } = require('../controllers/pecaController');
+const { createPiece, getPieces, updatePiece, deletePiece } = require('../controllers/pecasController');
 const { protect } = require('../midlleware/authMiddle');
 
 const router = express.Router();
