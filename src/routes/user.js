@@ -3,6 +3,7 @@ const { register, login } = require('../controllers/userController');
 
 const router = express.Router();
 
+//router.use(protect);
 /**
  * @swagger
  * tags:
