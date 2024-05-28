@@ -65,6 +65,7 @@ router.post('/', createDrone);
  */
 router.get('/', getDrones);
 
+
 /**
  * @swagger
  * /drones/{id}:

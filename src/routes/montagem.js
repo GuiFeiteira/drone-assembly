@@ -1,5 +1,5 @@
 const express = require('express');
-const { createAssembly, getAssemblies, updateAssembly, deleteAssembly } = require('../controllers/montagemController');
+const { createAssembly, getAssemblies, updateAssembly, deleteAssembly, getAssembliesByUser } = require('../controllers/montagemController');
 const { protect } = require('../midlleware/authMiddle');
 
 const router = express.Router();
@@ -66,6 +66,28 @@ router.post('/', createAssembly);
  *         description: Entrada inválida
  */
 router.get('/', getAssemblies);
+
+/* @swagger
+* montagens/user:
+*   get:
+*     summary: Obter todas as montagens do usuário autenticado
+*     tags: [Montagens]
+*     security:
+*       - bearerAuth: []
+*     responses:
+*       200:
+*         description: Lista de montagens do usuário
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 $ref: '#/components/schemas/Montagem' 
+*       500:
+*         description: Erro ao obter as montagens
+*/
+router.get('/user', getAssembliesByUser);
+
 
 /**
  * @swagger

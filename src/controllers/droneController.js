@@ -1,5 +1,5 @@
 const Drone = require('../models/Drone');
-
+const Montagem = require('../models/montagem')
 exports.createDrone = async (req, res) => {
   const { name, type } = req.body;
   const userId = req.user.id; 

@@ -1,5 +1,5 @@
 const Piece = require('../models/pecas');
-const Assembly = require('../models/montagem');
+    
 
 exports.createPiece = async (req, res) => {
   try {

@@ -50,6 +50,18 @@ exports.getAssemblies = async (req, res) => {
   }
 };
 
+exports.getAssembliesByUser = async (req, res) => {
+    try {
+      const userId = req.user.id; 
+      const assemblies = await Assembly.find({ user: userId }); 
+  
+      res.status(200).json(assemblies);
+    } catch (err) {
+      console.error(err); 
+      res.status(500).json({ error: 'Erro ao obter montagens do usuário' });
+    }
+  };
+
 exports.updateAssembly = async (req, res) => {
   try {
     const { id } = req.params;
