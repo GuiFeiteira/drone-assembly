@@ -4,7 +4,7 @@ const { protect } = require('../midlleware/authMiddle');
 
 const router = express.Router();
 
-//router.use(protect);
+router.use(protect);
 
 /**
  * @swagger
@@ -41,7 +41,7 @@ const router = express.Router();
  *       400:
  *         description: Entrada inválida
  */
-router.post('/pecas', createPiece);
+router.post('/', createPiece);
 
 /**
  * @swagger

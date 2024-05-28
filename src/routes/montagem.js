@@ -4,7 +4,7 @@ const { protect } = require('../midlleware/authMiddle');
 
 const router = express.Router();
 
-//router.use(protect);
+router.use(protect);
 
 /**
  * @swagger

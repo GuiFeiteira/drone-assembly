@@ -21,8 +21,8 @@ const montagemRoutes = require('./routes/montagem');
 
 app.use('/api/users', userRoutes);
 app.use('/api/drones', droneRoutes);
-app.use('./api/peca', pecasRoutes);
-app.use('./montagem', montagemRoutes)
+app.use('/api/peca', pecasRoutes);
+app.use('/api/montagem', montagemRoutes)
 
 const PORT = process.env.PORT || 5000;
 

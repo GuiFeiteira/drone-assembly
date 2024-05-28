@@ -5,7 +5,7 @@ const montagemSchema = new mongoose.Schema({
     pecas: {type: mongoose.Schema.Types.ObjectId, ref: 'pecas', required: true},
     quantidade: {type: Number, required: true, min: 1 },
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    data_montagem: {type: Date, required: true },
+    montagem_data: { type: Date, default: Date.now }
 },{timestamps: true});
 
 module.exports = mongoose.model('montagem', montagemSchema);
