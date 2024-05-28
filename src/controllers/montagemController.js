@@ -1,10 +1,11 @@
 const Montagem = require('../models/montagem')
 const Drone = require('../models/Drone')
 const Peca = require('..//models/pecas')
+c
 
 exports.createAssembly = async (req, res) => {
     try {
-      const { droneId, pieceId, quantidade } = req.body;
+      const { droneId, pecaId, quantidade } = req.body;
       const userId = req.user.id;
   
       // Verify Drone Existence
@@ -14,7 +15,7 @@ exports.createAssembly = async (req, res) => {
       }
   
       // Verify Piece Existence
-      const piece = await Piece.findOne({ _id: pieceId, user: userId });
+      const peca = await Peca.findOne({ _id: pecaId, user: userId });
       if (!piece) {
         return res.status(404).json({ error: 'Peça não encontrada' });
       }
@@ -35,6 +36,7 @@ exports.createAssembly = async (req, res) => {
   
       res.status(201).json(newAssembly);
     } catch (err) {
+        console.error(err);
       res.status(500).json({ error: 'Erro ao registrar a montagem' });
     }
   };
@@ -42,7 +44,7 @@ exports.createAssembly = async (req, res) => {
 exports.getAssemblies = async (req, res) => {
   try {
     const userId = req.user.id;
-    const assemblies = await Assembly.find({ user: userId }).populate('drone pieces');
+    const assemblies = await Montagem.find({ user: userId }).populate('drone pieces');
     res.status(200).json(assemblies);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao obter montagens' });
