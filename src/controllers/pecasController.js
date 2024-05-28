@@ -3,7 +3,7 @@ const Assembly = require('../models/montagem');
 
 exports.createPiece = async (req, res) => {
   try {
-    const { name, assemblyId } = req.body;
+    const { name} = req.body;
     const userId = req.user.id;
 
     const newPiece = new Piece({ name, user: userId});
