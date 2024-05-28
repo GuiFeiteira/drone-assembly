@@ -16,9 +16,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // Routes
 const userRoutes = require('./routes/user');
 const droneRoutes = require('./routes/drones');
+const pecasRoutes = require('./routes/peca');
+const montagemRoutes = require('./routes/montagem');
 
 app.use('/api/users', userRoutes);
 app.use('/api/drones', droneRoutes);
+app.use('/api/peca', pecasRoutes);
+app.use('/api/montagem', montagemRoutes)
 
 const PORT = process.env.PORT || 5000;
 
