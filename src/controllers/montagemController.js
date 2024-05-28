@@ -52,36 +52,53 @@ exports.getAssemblies = async (req, res) => {
 
 exports.updateAssembly = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { pieceId, quantidade, status } = req.body;
-    const userId = req.user.id;
+      const { id } = req.params;
+      const { droneId, pieceIds, quantidade, status } = req.body;
+      const userId = req.user.id;
 
-    // Optional Piece Verification (if provided)
-    if (pieceId) {
-      const piece = await Piece.findOne({ _id: pieceId, user: userId });
-      if (!piece) {
-        return res.status(404).json({ error: 'Peça não encontrada' });
+      // Verify Drone Existence (if provided)
+      if (droneId) {
+          const drone = await Drone.findById(droneId);
+          if (!drone || drone.user.toString() !== userId) {
+              return res.status(404).json({ error: 'Drone não encontrado' });
+          }
       }
-    }
 
-    // Validate Quantidade (if provided)
-    if (quantidade && quantidade <= 0) {
-      return res.status(400).json({ error: 'Quantidade deve ser maior que zero' });
-    }
+      // Verify Piece Existence (if provided)
+      if (pieceIds) {
+          for (const pieceId of pieceIds) {
+              const piece = await Piece.findOne({ _id: pieceId, user: userId });
+              if (!piece) {
+                  return res.status(404).json({ error: `Peça com ID ${pieceId} não encontrada` });
+              }
+          }
+      }
 
-    const assembly = await Assembly.findOneAndUpdate(
-      { _id: id, user: userId },
-      { pieces: pieceId, quantidade, status },
-      { new: true }
-    );
+      // Validate Quantidade (if provided)
+      if (quantidade && quantidade <= 0) {
+          return res.status(400).json({ error: 'Quantidade deve ser maior que zero' });
+      }
 
-    if (!assembly) {
-      return res.status(404).json({ error: 'Montagem não encontrada' });
-    }
+      const updateData = {};
 
-    res.status(200).json(assembly);
+      if (droneId) updateData.drone = droneId;
+      if (pieceIds) updateData.pecas = pieceIds;
+      if (quantidade) updateData.quantidade = quantidade;
+      if (status) updateData.status = status;
+
+      const assembly = await Assembly.findOneAndUpdate(
+          { _id: id, user: userId },
+          updateData,
+          { new: true }
+      );
+
+      if (!assembly) {
+          return res.status(404).json({ error: 'Montagem não encontrada' });
+      }
+
+      res.status(200).json(assembly);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao atualizar a montagem' });
+      res.status(500).json({ error: 'Erro ao atualizar a montagem' });
   }
 };
 
