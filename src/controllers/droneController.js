@@ -7,7 +7,11 @@ exports.createDrone = async (req, res) => {
     const drone = await Drone.create({ name, type, user: userId });
     res.status(201).json(drone);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.name === 'ValidationError') {
+      const formattedErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ errors: formattedErrors });
+    }
+    res.status(500).json({ error: 'An error occurred while creating the drone' });
   }
 };
 
@@ -36,6 +40,10 @@ exports.deleteDrone = async (req, res) => {
     await Drone.findByIdAndDelete(id);
     res.json({ message: 'Drone deleted' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.name === 'ValidationError') {
+      const formattedErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ errors: formattedErrors });
+    }
+    res.status(500).json({ error: 'An error occurred while updating the drone' });
   }
 };
