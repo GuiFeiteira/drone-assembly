@@ -7,7 +7,7 @@ exports.createPiece = async (req, res) => {
     const userId = req.user.id;
 
     const newPiece = new Piece({ name, user: userId});
-    await newPiece.save();
+    await newPiece.save(); 
     res.status(201).json(newPiece);
   } catch (error) {
     if (error.name === 'ValidationError') {

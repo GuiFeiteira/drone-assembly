@@ -22,7 +22,9 @@ const montagemRoutes = require('./routes/montagem');
 app.use('/api/users', userRoutes);
 app.use('/api/drones', droneRoutes);
 app.use('/api/peca', pecasRoutes);
-app.use('/api/montagem', montagemRoutes)
+app.use('/api/montagem', montagemRoutes);
+app.use('/api/stats', require('./routes/stats'));
+
 
 const PORT = process.env.PORT || 5000;
 
