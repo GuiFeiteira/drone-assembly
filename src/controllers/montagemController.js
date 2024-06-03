@@ -10,6 +10,7 @@ exports.createAssembly = async (req, res) => {
       // Verify Drone Existence
       const drone = await Drone.findById(droneId);
       if (!drone || drone.user.toString() !== userId) {
+        console.log(drone)
         return res.status(404).json({ error: 'Drone não encontrado' });
       }
   
@@ -34,11 +35,14 @@ exports.createAssembly = async (req, res) => {
       await newAssembly.save();
   
       res.status(201).json(newAssembly);
-    } catch (err) {
-         console.error(err);
-      res.status(500).json({ error: 'Erro ao registrar a montagem' });
-    }
-  };
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+          const formattedErrors = Object.values(error.errors).map(err => err.message);
+          return res.status(400).json({ errors: formattedErrors });
+      }
+      res.status(500).json({ error: 'An error occurred while creating the assembly' });
+  }
+};
 
 exports.getAssemblies = async (req, res) => {
   try {
@@ -96,9 +100,15 @@ exports.updateAssembly = async (req, res) => {
           return res.status(404).json({ error: 'Montagem não encontrada' });
       }
 
-      res.status(200).json(assembly);
-  } catch (err) {
-      res.status(500).json({ error: 'Erro ao atualizar a montagem' });
+    res.status(200).json(assembly);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const formattedErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ errors: formattedErrors });
+    }
+
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao atualizar a montagem' });
   }
 };
 

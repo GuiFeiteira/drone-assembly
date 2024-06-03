@@ -3,13 +3,18 @@ const Assembly = require('../models/montagem');
 
 exports.createPiece = async (req, res) => {
   try {
-    const { name} = req.body;
+    const {name} = req.body;
     const userId = req.user.id;
 
     const newPiece = new Piece({ name, user: userId});
-    await newPiece.save();
+    await newPiece.save(); 
     res.status(201).json(newPiece);
-  } catch (err) {
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const formattedErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ errors: formattedErrors });
+    }
+    console.error(error); 
     res.status(500).json({ error: 'Erro ao criar a peça' });
   }
 };
@@ -40,6 +45,11 @@ exports.updatePiece = async (req, res) => {
 
     res.status(200).json(piece);
   } catch (err) {
+    if (error.name === 'ValidationError') {
+      const formattedErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ errors: formattedErrors });
+    }
+    console.error(error); 
     res.status(500).json({ error: 'Erro ao atualizar a peça' });
   }
 };
