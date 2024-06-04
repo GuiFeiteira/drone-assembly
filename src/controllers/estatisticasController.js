@@ -2,10 +2,11 @@ const Drone = require('../models/Drone');
 const Piece = require('../models/pecas');
 const Assembly = require('../models/montagem');
 
+
 exports.getStats = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    
     // Total de Drones, Peças e Montagens
     const totalDrones = await Drone.countDocuments({ user: userId });
     const totalPieces = await Piece.countDocuments({ user: userId });
@@ -22,15 +23,23 @@ exports.getStats = async (req, res) => {
 
     // Drones com Mais Montagens
     const dronesWithMostAssemblies = await Assembly.aggregate([
-      { $match: { user: userId } },
-      { $group: { _id: "$drone", count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $lookup: { from: "drones", localField: "_id", foreignField: "_id", as: "drone" } },
-      { $unwind: "$drone" },
-      { $project: { _id: 0, drone: "$drone.name", count: 1 } },
-      { $limit: 5 } // Top 5 drones com mais montagens
+      { $match: { user: userId } }, // Filtra as montagens do usuário
+      { $group: { _id: "$drone", count: { $sum: 1 } } }, 
+      { $sort: { count: -1 } }, 
+      { $limit: 5 }, 
+      {
+        $lookup: {
+          from: "drones",
+          localField: _id,
+          foreignField: "_id", // ID do drone na coleção de drones
+          as: "drone" // Armazena o resultado em um array "drone"
+        }
+      },
+      { $unwind: "$drone" }, // Desempacota o array "drone" para ter um único objeto
+      { $project: { _id: 0, droneId: "$_id", droneName: "$drone.name", count: 1 } } // Inclui o ID e o nome do drone, além da contagem
     ]);
-
+    
+    
     // Média de Peças por Montagem
     const avgPiecesPerAssembly = await Assembly.aggregate([
       { $match: { user: userId } },

@@ -1,9 +1,24 @@
 const express = require('express');
+const { getStats } = require('../controllers/estatisticasController')
 const router = express.Router();
-const estatisticasController = require('../controllers/estatisticasController');
-const authenticateJWT = require('../middleware/auth');
+const { protect } = require('../midlleware/authMiddle');
 
-// Rota protegida para obter estatísticas (requer autenticação)
-router.get('/', authenticateJWT, estatisticasController.getStats);
+router.use(protect);
+/**
+ * @swagger
+ * /drones/stats:
+ *   get:
+ *     summary: Get drone statistics for the authenticated user
+ *     tags: [Drones]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Drone statistics
+ *       500:
+ *         description: Error fetching statistics
+ */
+router.get('/',  getStats);
+
 
 module.exports = router;
